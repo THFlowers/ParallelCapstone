@@ -3,6 +3,7 @@
 #define GO_HEADER
 
 #define BOARD_SIZE 19
+#define MAX_SQUARES (BOARD_SIZE*BOARD_SIZE)
 #define TRUE 1
 #define FALSE 0
 // 524287 is (1<<BOARD_SIZE)-1 for a 19x19
@@ -14,7 +15,7 @@ struct point { int row; int col; };
 enum side {BLACK=1, WHITE=-1}; /* multiply by -1 to change turns */
 
 unsigned int count_set_bits(unsigned int n);
-void printBinary(const int input);
+void printBinary(int input);
 void printBinmatrix(binmatrix* input);
 void printBoard(binmatrix* black, binmatrix* white);
 

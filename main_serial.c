@@ -9,7 +9,7 @@
 
 // how long to run MCTS in seconds
 #define INTERVAL 10
-#define TREE_NODE_GROWTH_INCREMENT 80;
+#define TREE_NODE_GROWTH_INCREMENT 80
 
 struct tree_node* tree_node_new();
 void tree_node_destroy(struct tree_node* self);
@@ -17,7 +17,6 @@ unsigned int ucb1_search(struct tree_node* node);
 
 int  read_in_board(FILE* file, binmatrix* black, binmatrix* white);
 void run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binmatrix* old_white_in, enum side ai_side);
-void bensens_algorithm(binmatrix* black, binmatrix* white, unsigned int* blk_score, unsigned int* wht_score, enum side ai_side);
 void random_simulation(binmatrix* black, binmatrix* white, binmatrix* old_black, binmatrix* old_white, unsigned int* blk_score, unsigned int* wht_score, unsigned int max_moves, enum side start_turn);
 
 struct tree_node
@@ -33,7 +32,6 @@ struct tree_node
 struct tree_node *root;
 
 // index via process id, each note stores parent pointer so back prop only needs its associated leaf
-int num_out;
 struct tree_node* running_leaves;
 
 int
@@ -140,9 +138,9 @@ read_in_board(FILE* file, binmatrix* black, binmatrix* white)
 		{
 			char ch = line[j];
 			if (ch == 'X' || ch == 'x')
-				black[i] |= 1<<(19-j-1);
+				black[i] |= 1<<(BOARD_SIZE-j-1);
 			else if (ch == 'O' || ch == 'o')
-				white[i] |= 1<<(19-j-1);
+				white[i] |= 1<<(BOARD_SIZE-j-1);
 			else
 				empty_spots++;
 		}
@@ -181,7 +179,7 @@ ucb1_search(struct tree_node* node)
 	unsigned int num_games = root->hits;
 	unsigned int best_index = 0;
 	double best_value = 0.0;
-	double cur_value = 0.0;
+	double cur_value;
 	struct tree_node* cur;
 	for (unsigned int i=0; i<node->num_children; i++)
 	{
@@ -246,7 +244,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 	
 	// descend through tree
 	struct tree_node* cur = root;
-	int free_spots = (19*19) - binmatrix_count(black)+binmatrix_count(white);
+	int free_spots = MAX_SQUARES - binmatrix_count(black)+binmatrix_count(white);
 	// num_children==free_spots is a nice heuristic, but may be impossible to reach (suicide and ko) so 3/4 way there is a good compromise (plus get to rest of mcts faster)
 	// free_spots >= 20 is for case where many remaining spots are suicide spots
 	while (cur->num_children != 0 && cur->num_children >= (0.75*free_spots) && free_spots >= 20)
@@ -254,7 +252,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 		int index = ucb1_search(cur);
 		cur = cur->children[index];
 		play_move(black, white, old_black, old_white, &black_score, &white_score, cur->location, &turn);
-		free_spots = (19*19) - binmatrix_count(black)+binmatrix_count(white);
+		free_spots = MAX_SQUARES - binmatrix_count(black)+binmatrix_count(white);
 	}
 
 	// pick new move
@@ -315,7 +313,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 	new_leaf->parent = cur;
 
 	// run simulation
-	free_spots = (19*19) - (binmatrix_count(black)+(binmatrix_count(white)));
+	free_spots = MAX_SQUARES - (binmatrix_count(black)+(binmatrix_count(white)));
 	free_spots /= 2;
 	// if free_spots is very low, remaining spots might all mostly suicides so reduce number of moves in playout hopefully avoids infintie looping
 	if (free_spots <= 20)
@@ -429,7 +427,7 @@ random_simulation(
 				int temp = 1;
 				for (move.col=0; move.col<BOARD_SIZE; move.col++)
 				{
-					if (row_sum & temp && TRUE == play_move(black, white, old_black, old_white, blk_score, wht_score, move, &cur_turn))
+					if ((row_sum & temp) && play_move(black, white, old_black, old_white, blk_score, wht_score, move, &cur_turn))
 					{
 						flag = 1;
 						break;

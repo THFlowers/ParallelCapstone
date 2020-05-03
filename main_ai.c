@@ -19,7 +19,7 @@
 
 // how long to run MCTS in seconds
 #define INTERVAL 10
-#define TREE_NODE_GROWTH_INCREMENT 80;
+#define TREE_NODE_GROWTH_INCREMENT 80
 
 struct tree_node* tree_node_new();
 void tree_node_destroy(struct tree_node* self);
@@ -166,9 +166,9 @@ read_in_board(FILE* file, binmatrix* black, binmatrix* white)
 		{
 			char ch = line[j];
 			if (ch == 'X' || ch == 'x')
-				black[i] |= 1<<(19-j-1);
+				black[i] |= 1<<(BOARD_SIZE-j-1);
 			else if (ch == 'O' || ch == 'o')
-				white[i] |= 1<<(19-j-1);
+				white[i] |= 1<<(BOARD_SIZE-j-1);
 			else
 				empty_spots++;
 		}
@@ -215,7 +215,7 @@ ucb1_search(struct tree_node* node)
 	unsigned int num_children = node->num_children;
 	unsigned int best_index = 0;
 	double best_value = 0.0;
-	double cur_value = 0.0;
+	double cur_value;
 	struct tree_node* cur;
 	for (unsigned int i=0; i<num_children; i++)
 	{
@@ -289,8 +289,8 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 	struct tree_node* cur = root, *next=NULL;
 	struct tree_node* new_leaf;
 	enum side new_node_side;
-	int free_spots = (19*19) - binmatrix_count(black)+binmatrix_count(white);
-	int index = -1;
+	int free_spots = MAX_SQUARES - binmatrix_count(black)+binmatrix_count(white);
+	int index;
 
 	// num_children==free_spots is a nice heuristic, but may be impossible to reach (suicide and ko) so 3/4 way there is a good compromise (plus get to rest of mcts faster)
 	// free_spots >= 20 is for case where many remaining spots are suicide spots
@@ -305,7 +305,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 
 		cur = next;
 		play_move(black, white, old_black, old_white, &black_score, &white_score, cur->location, &turn);
-		free_spots = (19*19) - binmatrix_count(black)+binmatrix_count(white);
+		free_spots = MAX_SQUARES - binmatrix_count(black)+binmatrix_count(white);
 	}
 
 	// pick new move
@@ -337,7 +337,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 			int temp = 1;
 			for (move.col=0; move.col<BOARD_SIZE; move.col++)
 			{
-				if (row_sum & temp && TRUE == play_move(black, white, old_black, old_white, &black_score, &white_score, move, &turn))
+				if ((row_sum & temp) && play_move(black, white, old_black, old_white, &black_score, &white_score, move, &turn))
 				{
 					//fprintf(stderr, "Found a sequential move!\n");
 					flag = 1;
@@ -366,7 +366,7 @@ run_mcts(binmatrix* black_in, binmatrix* white_in, binmatrix* old_black_in, binm
 	new_leaf->parent = cur;
 
 	// run simulation
-	free_spots = (19*19) - (binmatrix_count(black)+(binmatrix_count(white)));
+	free_spots = MAX_SQUARES - (binmatrix_count(black)+(binmatrix_count(white)));
 	free_spots /= 2;
 	// if free_spots is very low, remaining spots might all mostly suicides so reduce number of moves in playout hopefully avoids infintie looping
 	if (free_spots <= 20)

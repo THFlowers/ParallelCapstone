@@ -4,8 +4,8 @@ CFLAG= -Wall -pedantic -std=c99 -I.. -O3 -ffast-math -Wsuggest-attribute=const
 .PHONY: all 
 all: go_ai go_serial go_omp
 
-go_ai: main.c go.o
-	$(CC) $(CFLAG) -o go_ai main.c go.o -lm -fopenmp
+go_ai: main_ai.c go.o
+	$(CC) $(CFLAG) -o go_ai main_ai.c go.o -lm -fopenmp
 
 go_omp: main_omp.c
 	$(CC) $(CFLAG) -o go_omp main_omp.c go.o -lm -fopenmp
@@ -18,4 +18,4 @@ go.o: go.c
 
 
 clean:
-	rm -f *.o *~ e
+	rm -f *.o *~

@@ -74,7 +74,7 @@ prettyBoard(binmatrix* black, binmatrix* white)
 {
 	char blk_sym='X', wht_sym='O', emp_sym='*';
 	unsigned char wht_byte, blk_byte, mask;
-	int num_skip, max_skip=sizeof(int)*8-19;
+	int num_skip, max_skip=sizeof(int)*8-BOARD_SIZE;
 
 	for (int line=0; line<BOARD_SIZE; line++)
 	{
@@ -113,14 +113,16 @@ pick_random_move(binmatrix *black, binmatrix *white)
 	unsigned int row_sum;
 	for (int i=0; i<100; i++)
 	{
-#ifndef _OPENMP
-		pos.row = rand() % 19;
-		pos.col = rand() % 19;
+//#ifndef _OPENMP
+		pos.row = rand() % BOARD_SIZE;
+		pos.col = rand() % BOARD_SIZE;
+/*
 #else
 		int my_thread = omp_get_thread_num();
-		pos.row = rand_r(random_store+my_thread) % 19;
-		pos.col = rand_r(random_store+my_thread) % 19;
+		pos.row = rand_r(random_store+my_thread) % BOARD_SIZE;
+		pos.col = rand_r(random_store+my_thread) % BOARD_SIZE;
 #endif
+ */
 		row_sum = black[pos.row]+white[pos.row];
 		if (!(row_sum & (1<<(BOARD_SIZE-pos.col-1))))
 			return pos;
