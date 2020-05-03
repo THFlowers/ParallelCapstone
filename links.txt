@@ -1,0 +1,8 @@
+https://senseis.xmp.net/?BinMatrix
+https://senseis.xmp.net/?ComputerGoAlgorithms#toc3
+github.com/online-go/score-estimator
+en.wikipedia.org/wiki/Benson's_algorithm_(Go)
+sporadic.stanford.edu/bump/gnugo/gnugo_14.html
+https://senseis.xmp.net/?BouzyMap
+
+https://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/

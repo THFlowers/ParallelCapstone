@@ -1,0 +1,125 @@
+40601
+42231
+43968
+42207
+43734
+
+43913
+40411
+45919
+44991
+46343
+
+38307
+40029
+39741
+39897
+38899
+
+40368
+42432
+42482
+42851
+40937
+
+32105
+34395
+34403
+33903
+32574
+
+31252
+32716
+32867
+32021
+34536
+
+19851
+23513
+18869
+27111
+24128
+
+17255
+27227
+24379
+24917
+27275
+
+17160
+17327
+17273
+17967
+23646
+
+20215
+17516
+25641
+22367
+21914
+
+43279
+42941
+42931
+42403
+42183
+
+MCTS done 43565 games played
+MCTS done 45909 games played
+MCTS done 43909 games played
+MCTS done 43876 games played
+MCTS done 45418 games played
+
+MCTS done 39666 games played
+MCTS done 38605 games played
+MCTS done 41522 games played
+MCTS done 40376 games played
+MCTS done 39729 games played
+
+MCTS done 41696 games played
+MCTS done 42372 games played
+MCTS done 42105 games played
+MCTS done 42783 games played
+MCTS done 40418 games played
+
+MCTS done 32597 games played
+MCTS done 33712 games played
+MCTS done 35364 games played
+MCTS done 34575 games played
+MCTS done 33320 games played
+
+MCTS done 32846 games played
+MCTS done 33057 games played
+MCTS done 33403 games played
+MCTS done 34465 games played
+MCTS done 34803 games played
+
+MCTS done 19553 games played
+MCTS done 24414 games played
+MCTS done 23519 games played
+MCTS done 19255 games played
+MCTS done 28244 games played
+
+MCTS done 17562 games played
+MCTS done 25748 games played
+MCTS done 24385 games played
+MCTS done 19159 games played
+MCTS done 17220 games played
+
+MCTS done 23716 games played
+MCTS done 19023 games played
+MCTS done 19182 games played
+MCTS done 24680 games played
+MCTS done 26331 games played
+
+MCTS done 15493 games played
+MCTS done 17231 games played
+MCTS done 23366 games played
+MCTS done 25506 games played
+MCTS done 24567 games played
+
+MCTS done 4618 games played
+MCTS done 4844 games played
+MCTS done 4746 games played
+MCTS done 4819 games played
+MCTS done 4784 games played

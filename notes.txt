@@ -1,0 +1,49 @@
+Idea, parallel MCTS for naive go player
+
+-------------------------
+Idea 1
+
+Process zero decides all possible next moves then distributes them among all processes.  If number/process > 1, then process loops over number of moves sent.
+Each process fills in next move layer.  Since moves given make up first move layer, then minimum of 2 layers/moves ahead are considered.
+If using 2 bit ints to represent each cell, then gamestate (+ last move and/or ko position) can be stored in under 50 bytes (~43 just cells).
+After each process completes its simulations and fills its top layer, then they synch and the move with the best win percentage is chosen.
+
+
+-------------------------
+Idea 2
+
+Process zero reads game state.  A list of all possible moves are sent to each process (or entire board, each simulation step verifies move validity).  Each process runs a set number / time of simulations. After simulations are done, each top layer nodes success and attempts are reduced.  Then MCTS proceeds as normal.
+Instead of nodes structs, use parallel arrays to store success and attempt values.  Then reduce can be done in a pair of calls.
+Potential problem, each thread searches very shallowly, so the combination isn't as good qualitatively as one thread taking a longer time to search deeply by itself.
+That also means each thread might not have much variance in simulations despite randomness in simulation move selections.  So to add more variance in simulations modify the exploitation vs exploration factor based on process number.
+(This is essentially tree parallelization w/o mutexes, since we reduce afterwards)
+
+
+// Initial ideas are not permitted for this project, too close to embarassingly parallel
+// 2ndary idea, use MPI for threadpool for MCTS is clearly inefficent given how quick a single game is (even with constant text output)
+// So use shared memory parallelization instead (MPI idea is same as single mutex MCTS but with communication overhead
+
+
+Initially thought of using stack of moves for mpi implementation back-prop, turns out storing parent* is easier to code.
+
+Early on discovered running simulation is super fast, so shared memory is better.  Time of communication in MPI is way longer than running a simulation.
+
+Found a paper on MCTS parallelization methods:  Initial idea corresponds to root parallelization, it is not allowed (too easy to code), leaf parallelization (multi-simulations from same leaf) not to my taste, so 2 options left.  Use one big mutex, or use local mutexes (both improved with virtual loss).
+
+After implementing openmp and serial version, performance was roughly the same.  Large overlap in performance regardless of number of threads.  Serial 12k-20k sims, omp 14k-24k sims.
+
+After modifying TREE_NODE_GROWTH_INCREMENT from 10 to 20 improved this.  After trying 40 and 80 performance increased significantly.  Serial 12k-20k, omp 33k-36k (with 32 threads).
+
+Turning off optimizations -03 and -ffast-math for both gives: ~3,100 serial, and ~12,300 omp
+After trying several new optimizations, had no significant impact.  But serial ~8k and omp ~28k.
+
+Next attempt, use intel intrinsics for matrix methods.   Results, total failure.  After vectorizing 3 functions, the serial version dropped from 8-12k to high 4k.
+Had to switch to gcc44 (4.4.7) to get intrinsics working.
+
+On linprog4 after logout and reset screen session.  Found a logic error, turns out ucb1 wasn't actually working was always using node->hits and not actually touching child nodes.
+After fixing running serial gave ~20k games and omp gave ~36-40k games.  So I guess the discrepencies before are from linprog4 vs gpu2, as the error took the same time as correct code.
+
+Making sure each version uses 32 threads, then omp is *faster* than the fine grained version.  However, if I remove the lock around root->hits++ near the end then it is slightly faster (around 2k more games).
+This makes the program occasionally segfault. Hopefully this is b/c of this one change and not b/c of an earlier error.
+
+Attempts made should be sufficient.  Only one more error left to report, was using rand() in all threads, but this is not portable.  I was lucky it even ran, but it is not the best choice as each thread steps on the other's static var in rand().  Thus modification was made to use rand_r(unsigned int*), but this is ugly as they are stored in a global and externed array.
